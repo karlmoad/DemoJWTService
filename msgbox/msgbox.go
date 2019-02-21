@@ -1,37 +1,53 @@
 package msgbox
 
 import (
+	"DemoJWTService/authentication"
+	"DemoJWTService/drawgames"
+	"encoding/json"
+	"github.com/gorilla/context"
+	"github.com/gorilla/mux"
+	"log"
 	"net/http"
+	"strconv"
 )
 
-func GetInboxMessage(w http.ResponseWriter, r *http.Request) {
-/*	user := context.Get(r, "USER").(string)
+type secretMessage struct {
+	Name		string `json:"name"`
+	Message	interface{} `json:"message"`
+}
+
+
+
+func GetSecretMessage(w http.ResponseWriter, r *http.Request) {
+	token := context.Get(r, "TOKEN").(authentication.Token)
 	params := mux.Vars(r)
 
-	api, err := workspaces.NewApiInstance(user)
+	count := 1
+
+	if val, ok := params["count"]; ok {
+		if num, err := strconv.Atoi(val); err == nil {
+			count = num
+		}
+	}
+
+	game, err := drawgames.NewGame("POWERBALL")
 	if err != nil {
 		log.Fatal(err)
+		w.Write([]byte("Failed to initialize " + err.Error()))
 		w.WriteHeader(500)
 		return
 	}
 
-	ws, err := api.GetWorkspaceContents(params["id"], params["sha"])
-	if err == nil {
-		json.NewEncoder(w).Encode(ws)
-	} else {
-		w.WriteHeader(404)
-	}*/
-}
+	card, err := game.Draw(count)
+	if err != nil {
+		log.Fatal(err)
+		w.Write([]byte(err.Error()))
+		w.WriteHeader(500)
+		return
+	}
 
 
-func GetInboxMessages(w http.ResponseWriter, r *http.Request) {
-
-
-
-}
-
-func SendMessage(w http.ResponseWriter, r *http.Request) {
-
-
-
+	msg := secretMessage{Name:token.GivenName,Message:card}
+	json.NewEncoder(w).Encode(msg)
+	return
 }

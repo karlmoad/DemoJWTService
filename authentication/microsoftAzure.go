@@ -1,4 +1,4 @@
-package common
+package authentication
 
 import (
 	"errors"
@@ -18,8 +18,9 @@ var (
 
 
 type microsoftKeySource struct {
-	meta 		microsoftTokenMeta
-	keys 		microsoftTokenKeys
+	meta 		tokenMeta
+	keys 		tokenKeys
+	expires 		time.Time
 }
 
 func NewMicrosoftKeySource() (*microsoftKeySource, error){
@@ -31,7 +32,7 @@ func NewMicrosoftKeySource() (*microsoftKeySource, error){
 	}
 	defer resp.Body.Close()
 
-	var metadata microsoftTokenMeta
+	var metadata tokenMeta
 	err = json.NewDecoder(resp.Body).Decode(&metadata)
 	if err != nil {
 		log.Println(err)
@@ -45,21 +46,33 @@ func NewMicrosoftKeySource() (*microsoftKeySource, error){
 	}
 	defer resp2.Body.Close()
 
-	var keydata microsoftTokenKeys
+	var keydata tokenKeys
 	err = json.NewDecoder(resp2.Body).Decode(&keydata)
 	if err != nil {
 		log.Println(err)
 		return nil, ErrorKeyData
 	}
 
-	msKS := &microsoftKeySource{meta:metadata, keys:keydata}
+	// Microsoft suggests to check key data for changes every 24 hours
+	// to be safe we are cutting that in half with a 12 hour expiration time
+	msKS := &microsoftKeySource{meta:metadata, keys:keydata, expires:time.Now().Add(time.Hour * 12)}
 	return msKS, nil
 }
 
+func(m *microsoftKeySource) IsExpired() bool {
+	return time.Since(m.expires).Hours() > 0
+}
 
+func(m *microsoftKeySource) GetKidEntries() []string {
+	var out []string
+	for _, entry := range m.keys.Keys {
+		out = append(out, entry.Kid)
+	}
+	return out
+}
 
 func(m *microsoftKeySource) GetKeys(kid string) ([]string, error) {
-	for i , entry := range m.keys.Keys {
+	for _ , entry := range m.keys.Keys {
 		if strings.Compare(kid, entry.Kid) == 0 {
 			return entry.X5C, nil
 		}
@@ -67,7 +80,31 @@ func(m *microsoftKeySource) GetKeys(kid string) ([]string, error) {
 	return nil, ErrorKeyNotFound
 }
 
-type microsoftTokenMeta struct {
+type Token struct {
+	Aud        string   `json:"aud"`
+	Iss        string   `json:"iss"`
+	Iat        int      `json:"iat"`
+	Nbf        int      `json:"nbf"`
+	Exp        int      `json:"exp"`
+	Aio        string   `json:"aio"`
+	Amr        []string `json:"amr"`
+	FamilyName string   `json:"family_name"`
+	GivenName  string   `json:"given_name"`
+	InCorp     string   `json:"in_corp"`
+	Ipaddr     string   `json:"ipaddr"`
+	Name       string   `json:"name"`
+	Nonce      string   `json:"nonce"`
+	Oid        string   `json:"oid"`
+	OnpremSid  string   `json:"onprem_sid"`
+	Sub        string   `json:"sub"`
+	Tid        string   `json:"tid"`
+	UniqueName string   `json:"unique_name"`
+	Upn        string   `json:"upn"`
+	Uti        string   `json:"uti"`
+	Ver        string   `json:"ver"`
+}
+
+type tokenMeta struct {
 	AuthorizationEndpoint             string      `json:"authorization_endpoint"`
 	TokenEndpoint                     string      `json:"token_endpoint"`
 	TokenEndpointAuthMethodsSupported []string    `json:"token_endpoint_auth_methods_supported"`
@@ -93,7 +130,7 @@ type microsoftTokenMeta struct {
 }
 
 
-type microsoftTokenKeys struct {
+type tokenKeys struct {
 	Keys []struct {
 		Kty string   `json:"kty"`
 		Use string   `json:"use"`
@@ -104,5 +141,4 @@ type microsoftTokenKeys struct {
 		X5C []string `json:"x5c"`
 	} `json:"keys"`
 }
-
 

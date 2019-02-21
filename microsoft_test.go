@@ -6,7 +6,7 @@ import (
 )
 
 func TestNewMicrosoftKeySource(t *testing.T) {
-	msKS, err := common.NewMicrosoftKeySource()
+	_, err := common.NewMicrosoftKeySource()
 	if err != nil {
 		t.Error(err)
 	}
@@ -18,7 +18,12 @@ func TestMicrosoftKeySource_GetKeys(t *testing.T) {
 		t.Error(err)
 	}
 
-	keys, err := msKS.GetKeys("-sxMJMLCIDWMTPvZyJ6tx-CDxw0")
+	kids := msKS.GetKidEntries()
+	if len(kids) == 0{
+		t.Errorf("No KID entires found")
+	}
+
+	keys, err := msKS.GetKeys(kids[0])
 	if err != nil {
 		t.Error(err)
 	}

@@ -1,4 +1,4 @@
-package DemoJWTService
+package main
 
 import (
 	"DemoJWTService/authentication"
@@ -13,10 +13,15 @@ import (
 func main() {
 	log.SetOutput(os.Stdout)
 	router := mux.NewRouter()
-	router.HandleFunc("/inbox", authentication.AuthenticationHandler(msgbox.GetInboxMessages)).Methods("GET")
-	router.HandleFunc("/inbox/{id}", authentication.AuthenticationHandler(msgbox.GetInboxMessage)).Methods("GET")
-	router.HandleFunc("/send", authentication.AuthenticationHandler(msgbox.SendMessage)).Methods("POST")
-	http.ListenAndServe(":9880", handlers.LoggingHandler(os.Stdout, router))
+	router.HandleFunc("/secret", authentication.AuthenticationHandler(msgbox.GetSecretMessage)).Methods("GET")
+	router.HandleFunc("/secret/{count}", authentication.AuthenticationHandler(msgbox.GetSecretMessage)).Methods("GET")
+
+	// CORS options
+	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization","Content-Length", "Accept"})
+	originsOk := handlers.AllowedOrigins([]string{"*"})  // allow all inbound domains
+	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS", "DELETE"})
+
+	http.ListenAndServe(":30200", handlers.CORS(headersOk, originsOk, methodsOk)(handlers.LoggingHandler(os.Stdout, router)))
 }
 
 
