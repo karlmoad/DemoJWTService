@@ -1,8 +1,8 @@
 package msgbox
 
 import (
-	"DemoJWTService/authentication"
-	"DemoJWTService/drawgames"
+	"github.com/karlmoad/DemoJWTService/authentication"
+	"github.com/karlmoad/DemoJWTService/drawgames"
 	"encoding/json"
 	"github.com/gorilla/context"
 	"github.com/gorilla/mux"

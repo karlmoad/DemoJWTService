@@ -1,7 +1,7 @@
 package drawgames
 
 import (
-	"DemoJWTService/common"
+	"github.com/karlmoad/DemoJWTService/common"
 	"fmt"
 	"time"
 )

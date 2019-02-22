@@ -1,8 +1,8 @@
 package main
 
 import (
-	"DemoJWTService/authentication"
-	"DemoJWTService/msgbox"
+	"github.com/karlmoad/DemoJWTService/authentication"
+	"github.com/karlmoad/DemoJWTService/msgbox"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"log"
