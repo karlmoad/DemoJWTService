@@ -29,19 +29,24 @@ Optional:
 Using Make:
 
 ``` 
-    $ make 
+
+    $ make
+     
 ```
 
 Using Go Build:
 
 ```
+
     $ go build -o ./dist/DemoJWTService service.go
+    
 ```
 
 
 This will build the application to run as a local executable, once built navigate to the **dist** directory and execute the **WorkspaceService** executable
 
 ```
+
     $ cd dist
     $ ./DemoJWTService
 
@@ -49,3 +54,21 @@ This will build the application to run as a local executable, once built navigat
 
 Service will be available at **http://localhost:30200/...**
 
+
+## Build for Docker
+
+Using Make:
+
+```
+
+    $ make docker TAG=<version>
+    
+```
+
+Using Command Line:
+
+```
+
+    $ docker build -t $karlmoad/demo-jwt-service:<version> .
+
+```
