@@ -1,4 +1,7 @@
-.PHONY: all ref build clean
+.PHONY: all ref build clean docker
+
+TAG?=latest
+PREFIX?=karlmoad
 
 DIST_PATH := dist
 
@@ -12,3 +15,9 @@ build: service.go
 
 clean:
 	rm -f $(DIST_PATH)/*
+
+docker: clean build
+	docker build --tag $(PREFIX)/demo-jwt-service:$(TAG) .
+
+
+
