@@ -6,7 +6,7 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
-	"github.com/gbrlsnchs/jwt"
+	"github.com/gbrlsnchs/jwt/v2"
 	"github.com/gorilla/context"
 	"net/http"
 	"os"

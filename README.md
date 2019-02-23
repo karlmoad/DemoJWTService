@@ -1,12 +1,11 @@
 # DemoJWTService
 
 
-This is a demonstration web (REST) service showing the methods used to integrate and verify JWT tokens into the service calls.  
-Microsoft Azure Active Directory is used as the token idp, hence the validation logic is specific to the Microsoft implementation for now.
+This is a demonstration web (REST) service showing the methods used to integrate and verify JWT tokens into the service calls.  Microsoft Azure Active Directory is used as the token idp, hence the validation logic is specific to the Microsoft implementation for now.
 
-**Note:** This service is compliant with [IETF RFC6750](https://tools.ietf.org/html/rfc6750) and utilizes the Bearer authorization scheme
+**NOTE:** This service is compliant with [IETF RFC6750](https://tools.ietf.org/html/rfc6750) and utilizes the Bearer authorization scheme
 
-The service will extract the JWT authorization token form the request header and verify the signature against the appropriate microsoft certificates as well as verifying the token's **aud** value against the configured MS Azure app key
+The service will extract the JWT authorization token from the request header and verify the signature against the appropriate microsoft certificates as well as verifying the token's **aud** value against the configured MS Azure app key
 
 Prerequisites:
 - A registered Microsoft Azure Active Directory application key.
@@ -16,8 +15,9 @@ Prerequisites:
     $ export AZURE_APP_KEY=<app key here>
 
 ```
-- GO language compiler (see https://golang.org/doc/install for your specific platform)
+- GO (minimal version 1.11) language compiler (see https://golang.org/doc/install for your specific platform).
 
+**NOTE:** This project utilizes the go modules dependency management system. 
 
 
 Optional:
